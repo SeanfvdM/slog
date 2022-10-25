@@ -4,13 +4,18 @@ import 'dart:convert';
 import 'package:slog_core/slog_core.dart';
 import 'package:stack_trace/stack_trace.dart';
 
+///Prints the log in a JSON format
 class JsonPrinter extends SLogPrinter {
+  ///Prints the log in a JSON format
   JsonPrinter({
     this.shouldPrint = true,
     this.printStackTrace = true,
   });
 
+  ///Will only print if `true`
   final bool shouldPrint;
+
+  ///Will add the current stack trace if `true`
   final bool printStackTrace;
 
   String _getPrettyLogRequest(LogRequest request) {

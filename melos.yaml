@@ -5,6 +5,7 @@ repository: https://github.com/SeanfvdM/slog
 dependency_overrides:
   slog_core:
     path: ../packages/slog_core
+  stack_trace: ^1.10.0
 
 ide:
   intellij:

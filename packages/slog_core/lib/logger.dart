@@ -7,9 +7,17 @@ export 'src/model.dart';
 
 ///The main logger for SLog and its dependencies
 class Logger extends SLogger with EventRequests {
+  ///Creates a new instance of the base logger
   Logger({required SLogOptions options}) : super(options: options);
 
-  Logger._default() : super(options: SLogOptions.none());
+  ///Init the global instance of the SLog with options
+  factory Logger.init({
+    SLogOptions options = const SLogOptions.none(),
+  }) {
+    return _instance = Logger(options: options);
+  }
+
+  Logger._default() : super(options: const SLogOptions.none());
 
   static Logger _instance = Logger._default();
 
@@ -18,11 +26,4 @@ class Logger extends SLogger with EventRequests {
 
   ///Get the global instance of the SLog
   static Logger get I => _instance;
-
-  ///Init the global instance of the SLog with options
-  factory Logger.init({
-    SLogOptions options = const SLogOptions.none(),
-  }) {
-    return _instance = Logger(options: options);
-  }
 }

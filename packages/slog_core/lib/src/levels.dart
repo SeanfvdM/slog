@@ -1,9 +1,23 @@
+///The logger levels
+///
+///See [package:logging](https://pub.dev/packages/logging) for more details on log levels
+///
+///A class was used instead of an Enum as a class allows creation of new Levels
 class Level {
+  ///Creates a new log level
   const Level(this.name, this.value);
 
+  ///The level's name
   final String name;
+
+  ///The level's value
   final int value;
 
+  ///Used to return the logs value when you invoke the level.
+  ///
+  ///```
+  ///print(Level.INFO()); //return 800
+  ///```
   int call() => value;
 
   @override
