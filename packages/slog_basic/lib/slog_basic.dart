@@ -9,3 +9,4 @@
 library slog_basic;
 
 export 'src/interceptors.dart';
+export 'src/printers.dart';
