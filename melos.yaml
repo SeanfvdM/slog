@@ -1,6 +1,10 @@
 name: slog
 
-repository:
+repository: https://github.com/SeanfvdM/slog
+
+dependency_overrides:
+  slog_core:
+    path: ../packages/slog_core
 
 ide:
   intellij:
