@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:isolate';
 
+import 'package:async/async.dart';
 import 'package:meta/meta.dart';
 import 'package:slog_core/src/errors.dart';
+import 'package:slog_core/src/levels.dart';
 import 'package:slog_core/src/model.dart';
 
 ///The base logger class
@@ -13,7 +16,49 @@ abstract class SLogger {
     _options = options;
   }
 
+  ///Initialize the logger to run in an isolate so that the logger does not
+  /// hinder the main thread performance.
+  ///
+  ///throws [IsolateSpawnException]
+  @mustCallSuper
+  Future<void> initIsolate() async {
+    if (_isolate != null) {
+      throw IsolateSpawnException('Logger isolate is already active.'
+          ' Call closeIsolate to recreate the isolate.');
+    }
+    log('Initializing logger', name: 'SLOG', level: Level.DEBUG());
+    final port = ReceivePort();
+    _isolate = await Isolate.spawn(
+      _handleIsolateLogRequest,
+      port.sendPort,
+      debugName: 'slogger',
+      errorsAreFatal: false,
+    );
+    _events = StreamQueue<dynamic>(port);
+    //The first event will always be a SendPort
+    _sendPort = await _events!.next as SendPort;
+  }
+
+  ///Close the logger isolate
+  ///@mustCallSuper
+  Future<void> closeIsolate() async {
+    if (_isolate == null) {
+      log('Logger isolate never opened', name: 'SLOG', level: Level.WARNING());
+    } else {
+      _sendPort!.send(null);
+      await _events!.cancel();
+      log('Logger isolate terminated', name: 'SLOG', level: Level.WARNING());
+      _isolate?.kill();
+      _isolate = null;
+      _sendPort = null;
+      _events = null;
+    }
+  }
+
   late final SLogOptions _options;
+  Isolate? _isolate;
+  StreamQueue<dynamic>? _events;
+  SendPort? _sendPort;
 
   ///Get the current options that the logger is using.
   ///
@@ -54,10 +99,22 @@ abstract class SLogger {
     }
   }
 
-  ///Used to run the interceptors and printers
+  void _handleIsolateLogRequest(SendPort port) {
+    //Communication port for main isolate
+    final commandPort = ReceivePort();
+    port.send(commandPort.sendPort);
+
+    commandPort.listen((message) async {
+      if (message != null && message is LogRequest) {
+        await _handleLogRequest(message);
+      } else {
+        port.send(message);
+      }
+    });
+  }
+
   @protected
-  @mustCallSuper
-  Future<void> requestLog(LogRequest request) async {
+  Future<LogRequest?> _handleLogRequest(LogRequest request) async {
     var processedRequest = request;
 
     for (final interceptor in _options.interceptors) {
@@ -72,7 +129,7 @@ abstract class SLogger {
             level: 2,
             name: 'slogger.request',
           );
-          return;
+          return null;
         }
         processedRequest = newRequest;
       } catch (e, stack) {
@@ -102,6 +159,17 @@ abstract class SLogger {
           stackTrace: stack,
         );
       }
+    }
+    return processedRequest;
+  }
+
+  ///Used to run the interceptors and printers
+  @protected
+  Future<void> requestLog(LogRequest request) async {
+    if (_isolate != null) {
+      _sendPort!.send(request);
+    } else {
+      await _handleLogRequest(request);
     }
   }
 }

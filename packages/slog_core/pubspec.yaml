@@ -1,12 +1,13 @@
 name: slog_core
-description: The core logger for SLogs.
-version: 0.1.0+1
+description: A Basic Logger and Core for SLogs. A logger that wants to be more flexible.
+version: 0.2.0
 repository: https://github.com/SeanfvdM/slog/tree/main/packages/slog_core
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
 
 dependencies:
+  async: ^2.10.0
   meta: ^1.8.0
   stack_trace: ^1.10.0
 

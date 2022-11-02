@@ -1,14 +1,14 @@
 name: slog_basic
 description: A set of pre-made printers and interceptors that can be used with SLog also a good example of printers and interceptors.
-version: 0.1.0+2
+version: 0.1.1
 repository: https://github.com/SeanfvdM/slog/tree/main/packages/slog_basic
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
 
 dependencies:
+  slog_core: ^0.2.0
   stack_trace: ^1.10.0
-  slog_core: ^0.1.0+1
 
 dev_dependencies:
   mocktail: ^0.3.0

@@ -12,6 +12,7 @@ point of having the core package.
 - Printers
 - Interceptors
 - Channels
+- Logger [isolate](https://dart.dev/guides/language/concurrency)
 
 ## Installation
 
@@ -44,19 +45,62 @@ dart pub add slog_core
 flutter pub add slog_core
 ```
 
+## Basic Logger
+
+The basic logger is globally available and uses the singleton pattern. You can create your on instance non-singleton
+instance just call the constructor for `Logger`.
+
+```dart
+import 'package:slog_core/logger.dart';
+
+main() {
+  //You can initialize the Basic Logger if you want,
+  //but by default it is already initialized with no options.
+  //It is recommended to init the logger with at least one printer as there is no printer by default.
+  Logger.init();
+  //or
+  Logger.init(
+    options: SLogOptions(
+      printers: [
+        SomePrinter(), //not a real printer, see slog_basic for per-made printers
+      ],
+    ),
+  );
+
+  Logger.I.log('Hello world');
+  //or
+  Logger.instance.log('Hello world');
+}
+```
+
+## Some notes
+
+### Errors
+
+If the logger, printers or interceptors throw an error the SLogger will try to not bubble them up to the main thread.
+
+Like if a `jsonEncode` or `jsonDecode` throw an error inside a printer, the logger will catch the error and print a
+message to dart log.
+
+### Loggers
+
+Because this package was built with customization in mind. You can add your own `Levels`, create a new logger by
+extending the `SLogger`, it is recommended that you create your own interceptors and printers as we can't guess your use
+case.
+
 ## Motivation
 
 Yes I know there are a lot of logger out there I'm not saying mine is better, I'm saying that it has functionality I
 want in a logger, like having multiple printers and allow for interceptors like what [dio](https://pub.dev/packages/dio)
-or [chopper](https://pub.dev/packages/chopper) has why should it be exclusive to HTTP clients?
+or [chopper](https://pub.dev/packages/chopper) has. Why should it be exclusive to HTTP clients?
 
 ## TODO
 
-- [x] Interceptors: see [slog_basic][slog_basic_repo]
-- [x] Printers: see [slog_basic][slog_basic_repo]
-- [ ] Filters
-- [ ] UI package for flutter
-- [ ] Local server
+- ✓ Interceptors: see [slog_basic][slog_basic_repo]
+- ✓ Printers: see [slog_basic][slog_basic_repo]
+- Filters
+- UI package for flutter
+- Local server package
 
 [slog_basic_repo]: https://github.com/SeanfvdM/slog/tree/main/packages/slog_basic
 

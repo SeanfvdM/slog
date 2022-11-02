@@ -8,7 +8,7 @@ export 'src/model.dart';
 ///The main logger for SLog and its dependencies
 class Logger extends SLogger with EventRequests {
   ///Creates a new instance of the base logger
-  Logger({required SLogOptions options}) : super(options: options);
+  Logger({required super.options});
 
   ///Init the global instance of the SLog with options
   factory Logger.init({

@@ -12,10 +12,12 @@ mixin EventRequests on SLogger {
   ///- [message] is the message of the log
   ///- [data] is additional data for the log
   ///- [level] is the log level
-  ///- [channel] is the channel this log belongs to. Example `'event'` or `'network'`
+  ///- [channel] is the channel this log belongs to. Example `'event'` or
+  ///`'network'`
   ///- [trace] is a Stack Trace associated with the current log
   ///
-  ///Throws [LogChannelDoesNotExist] if [SLogOptions.handleMissingChannels] is `false`
+  ///Throws [LogChannelDoesNotExist] if [SLogOptions.handleMissingChannels] is
+  ///`false`
   void log(
     String message, {
     Object? data,

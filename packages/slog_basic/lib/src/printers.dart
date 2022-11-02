@@ -40,14 +40,21 @@ class JsonPrinter extends SLogPrinter {
           .trim();
     }
 
+    //ignore:join_return_with_assignment
     out += '\n└${''.padRight(50, '─')}\n';
 
     return out;
   }
 
   String _getPrettyJSONString(Map<String, dynamic> jsonObject) {
+    final safeObject = jsonDecode(
+      jsonEncode(
+        jsonObject,
+        toEncodable: (nonEncodable) => nonEncodable.runtimeType.toString(),
+      ),
+    );
     const encoder = JsonEncoder.withIndent('\t');
-    return encoder.convert(jsonObject);
+    return encoder.convert(safeObject);
   }
 
   @override

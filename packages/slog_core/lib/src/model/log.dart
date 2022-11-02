@@ -13,10 +13,16 @@ class Log extends ToJsonFunctions {
   Log({
     required this.message,
     this.data,
-  });
+    DateTime? timestamp,
+  }) {
+    this.timestamp = timestamp ?? DateTime.now();
+  }
 
   ///The log's message
   final String message;
+
+  ///The time the log was created in milliseconds
+  late final DateTime timestamp;
 
   ///The data linked to the log
   final Object? data;
@@ -25,6 +31,7 @@ class Log extends ToJsonFunctions {
   Map<String, dynamic> toMap() {
     return {
       'message': message,
+      'timestamp': timestamp.millisecondsSinceEpoch,
       if (data != null) 'data': data,
     };
   }
@@ -33,10 +40,12 @@ class Log extends ToJsonFunctions {
   Log copyWith({
     String? message,
     Object? data,
+    DateTime? timestamp,
   }) =>
       Log(
         message: message ?? this.message,
         data: data ?? this.data,
+        timestamp: timestamp ?? this.timestamp,
       );
 }
 
